@@ -9,12 +9,13 @@ from select import select
 
 serverAddr = ("", 50000)   # any addr, port 50,000
 
-def uppercase(sock):
+def verifyFile(sock):
   "run this function when sock has rec'd a message"
-  message, clientAddrPort = sock.recvfrom(2048)
-  print("from %s: rec'd '%s'" % (repr(clientAddrPort), message))
-  modifiedMessage = message.decode().upper().encode()
-  sock.sendto(modifiedMessage, clientAddrPort)
+  fileName, clientAddrPort = sock.recvfrom(2048)
+  print("from %s: rec'd '%s'" % (repr(clientAddrPort), repr(fileName)))
+  AckMsg = fileName.decode()+"ACK"
+  
+  sock.sendto(AckMsg.encode(), clientAddrPort)
   
 
 supperServerSocket = socket(AF_INET, SOCK_DGRAM)
@@ -29,7 +30,7 @@ errorSockFunc = {}              # broken
 timeout = 3                     #Allocates 3 seconds before failing each connection
 
 # function to call when upperServerSocket is ready for reading
-readSockFunc[supperServerSocket] = uppercase
+readSockFunc[supperServerSocket] = verifyFile
 
 print("ready to receive")
 timeoutNum = 0
