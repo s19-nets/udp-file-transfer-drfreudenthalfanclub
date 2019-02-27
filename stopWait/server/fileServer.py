@@ -15,10 +15,11 @@ def verifyFile(sock):
   "run this function when sock has rec'd a message"
   fileName, clientAddrPort = sock.recvfrom(2048)
   print("from %s: rec'd '%s'" % (repr(clientAddrPort), repr(fileName)))
-  AckMsg = fileName.decode()+" ACK"
-  storedName = verifyName(fileName.decode())
-  print (storedName) 
-  sock.sendto(AckMsg.encode(), clientAddrPort)
+  AckFile = fileName.decode()+" ACK"
+  storedName = str(verifyName(fileName.decode()))
+  print ("Storing file as:"+ str(storedName))
+  f= open(storedName,"w+")
+  sock.sendto(AckFile.encode(), clientAddrPort)
 
 def verifyName(fileName):
   filePath = './%s' % (fileName)
