@@ -2,10 +2,12 @@
 # udp demo -- simple select-driven uppercase server
 
 # Eric Freudenthal with mods by Adrian Veliz
-
 import sys
+import os
+import random
 from socket import *
 from select import select
+
 
 serverAddr = ("", 50000)   # any addr, port 50,000
 
@@ -13,10 +15,19 @@ def verifyFile(sock):
   "run this function when sock has rec'd a message"
   fileName, clientAddrPort = sock.recvfrom(2048)
   print("from %s: rec'd '%s'" % (repr(clientAddrPort), repr(fileName)))
-  AckMsg = fileName.decode()+"ACK"
-  
+  AckMsg = fileName.decode()+" ACK"
+  storedName = verifyName(fileName.decode())
+  print (storedName) 
   sock.sendto(AckMsg.encode(), clientAddrPort)
-  
+
+def verifyName(fileName):
+  filePath = './%s' % (fileName)
+  fileExists=os.path.isfile(filePath)
+  if (fileExists):
+    newFileName = fileName.replace(".","_"+str(random.randint(0,100))+".")
+    return newFileName
+  else:
+    return fileName
 
 supperServerSocket = socket(AF_INET, SOCK_DGRAM)
 supperServerSocket.bind(serverAddr)
@@ -39,6 +50,7 @@ while 1:
                                                 list(writeSockFunc.keys()), 
                                                 list(errorSockFunc.keys()),
                                                 timeout)
+  
   if not readRdySet and not writeRdySet and not errorRdySet:
     print("timeout: no events")
     timeoutNum+=1
