@@ -2,12 +2,11 @@
 # udp demo client.  Modified from Kurose/Ross by Eric Freudenthal 2016
 
 from socket import *
-
+import os
+import sys, re                          
 
 # default params
 serverAddr = ('localhost', 50000)       
-
-import sys, re                          
 
 def usage():
     print("usage: %s [--serverAddr host:port]"  % sys.argv[0])
@@ -30,8 +29,20 @@ except:
 print("serverAddr = %s" % repr(serverAddr))
 
 clientSocket = socket(AF_INET, SOCK_DGRAM)
-print("Input lowercase msg")
-message = sys.stdin.readline()[:-1]     # delete final \n
-clientSocket.sendto(message.encode(), serverAddr)
-modifiedMessage, serverAddrPort = clientSocket.recvfrom(2048)
-print('Modified message from %s is "%s"' % (repr(serverAddrPort), modifiedMessage.decode()))
+print("Input file name. Format: foo.extension")
+fileName = sys.stdin.readline()[:-1]     # delete final \n
+filePath = './%s' % (fileName)
+fileExists=os.path.isfile(filePath)
+
+
+if (fileExists):
+    # True, proceed with file check
+    print("file found, or something like that")
+    clientSocket.sendto(fileName.encode(), serverAddr)
+    fileAck, serverAddrPort = clientSocket.recvfrom(100)
+    print('fileAck from %s is "%s"' % (repr(serverAddrPort), fileAck.decode()))
+
+else:
+    print ("file not found, exiting program")
+        
+#Do a check here to see if that fileName is valid, if so proceed, if not repeat?
