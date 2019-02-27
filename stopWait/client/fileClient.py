@@ -36,10 +36,10 @@ fileExists=os.path.isfile(filePath)
 
 
 if (fileExists):
-    # True, proceed with file check
+    # True, proceed with sending filename (and data in the future)
     print("file found, or something like that")
     clientSocket.sendto(fileName.encode(), serverAddr)
-    fileAck, serverAddrPort = clientSocket.recvfrom(100)
+    fileAck, serverAddrPort = clientSocket.recvfrom(2048)
     print('fileAck from %s is "%s"' % (repr(serverAddrPort), fileAck.decode()))
 
 else:
