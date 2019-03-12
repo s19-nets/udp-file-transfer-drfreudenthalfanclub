@@ -13,15 +13,21 @@ serverAddr = ("", 50000)   # any addr, port 50,000
 
 def verifyFile(sock):
   "run this function when sock has rec'd a message"
-  fileName, clientAddrPort = sock.recvfrom(2048)
+  fileName, clientAddrPort = sock.recvfrom(100)
   print("from %s: rec'd '%s'" % (repr(clientAddrPort), repr(fileName)))
   AckFile = fileName.decode()+" ACK"
   storedName = str(verifyName(fileName.decode()))
+
   print ("Storing file as:"+ str(storedName))
   f= open(storedName,"w+")
+  
   sock.sendto(AckFile.encode(), clientAddrPort)
 
 def verifyName(fileName):
+  #splits packet's header and payload
+  packetList = fileName.split(',')
+  fileName = packetList[2]
+  
   filePath = './%s' % (fileName)
   fileExists=os.path.isfile(filePath)
   if (fileExists):
